@@ -1,0 +1,105 @@
+Chunk 1: Personal and Profile
+Title: Candidate Profile
+Vijay Takbhate is a Data Science and MLOps professional with hands-on experience in production-grade machine learning systems, LLM orchestration, CI/CD pipelines, and data engineering platforms.
+He has worked in fintech risk systems and automation engineering, focusing on reliability, scalability, and deployment of AI-driven solutions.
+
+Contact Information
+Email: vijaytakbhate20@gmail.com
+Phone: +91-8767363681
+GitHub: https://github.com/vijaytakbhate2002
+LinkedIn: https://www.linkedin.com/in/vijay-takbhate-b9231a236/
+Kaggle: https://www.kaggle.com/vijay20213
+
+Chunk 2: Technical Skills
+Title: Technical Skills
+Programming and Backend Technologies
+Python, Flask, SQL (MySQL), Streamlit
+AI, LLMs, and Frameworks
+LangChain, LangGraph, LLM Orchestration, Prompt Engineering, GPT-3.5, GPT-4, GPT-5-mini
+MLOps and DevOps Tools
+MLflow, DVC, DagsHub, Docker, GitHub Actions (CI/CD)
+Data Engineering and Analytics
+Databricks, PySpark, Metabase, Kubernetes
+Cloud Platforms
+AWS, AWS Lambda, GCP
+Chunk 3: Professional Experience – InCred Financial Services
+
+Title: Experience – Risk Analyst (MLOps and Data Engineering)
+Company: InCred Financial Services
+Location: Mumbai, Maharashtra
+Duration: December 2024 – Present
+Designed and deployed credit risk policies within a production Business Rule Engine system.
+Ensured compliance and seamless integration with enterprise risk workflows.
+Developed a custom Python package named Simulator to validate policy logic before production rollout.
+Reduced policy verification time by 30 percent and code complexity by 50 percent.
+Implemented CI/CD pipelines using GitHub Actions for automated testing and deployment.
+Technologies and Skills
+Python, GitHub Actions, Databricks, Metabase, SQL, Git, Excel
+
+Chunk 4: Professional Experience – Fox Solutions
+Title: Experience – Automation Engineer
+Company: Fox Solutions Pvt. Ltd.
+Location: Pune and Nashik, Maharashtra
+Duration: February 2024 – October 2024
+Built automation pipelines to improve reproducibility and reduce manual intervention.
+Applied reliability engineering and monitoring practices in production systems.
+Worked with version control systems and industrial automation tools.
+Technologies and Skills
+Pipeline Automation, Monitoring Systems, Version Control, PLC and SCADA
+
+Chunk 5: Project – AI-Powered Portfolio and Resume Assistant
+Title: Project – AI-Powered HR Interview Assistant
+Timeline: October 2025
+Built an AI-driven platform allowing recruiters to conduct virtual HR interviews.
+Implemented multi-LLM pipelines for question classification, contextual answer generation, and validation.
+Used LangChain with GPT-5-mini for orchestration.
+Deployed the application using Flask, Docker, and AWS EC2.
+Integrated MLflow for experiment tracking and GitHub Actions for CI/CD.
+Technology Stack
+Python, Flask, LangChain, GPT-5-mini, MLflow, Docker, AWS EC2
+Project Links
+GitHub: https://github.com/vijaytakbhate2002/portfolio-support-quick-hr-interview-bot
+Live Demo: http://ec2-52-21-78-219.compute-1.amazonaws.com:5000/
+
+Chunk 6: Project – Medical Insurance Cost Prediction
+Title: Project – Medical Insurance Cost Prediction (SVR)
+Timeline: September 2025
+Developed a Support Vector Regression model achieving an R-squared score of 0.86 and a mean absolute error of 0.034.
+Built a Flask-based web application for insurance cost prediction.
+Containerized the application using Docker and deployed it on AWS EC2.
+Integrated MLflow, CI/CD pipelines, and Kubeflow for full MLOps lifecycle management.
+Technology Stack
+Python, Flask, Docker, MLflow, Kubeflow, AWS EC2
+Project Repositories
+https://github.com/vijaytakbhate2002/medical-insurance-cost-prediction-SVR
+https://github.com/vijaytakbhate2002/Loan_eligibility_prediction
+
+Chunk 7: Certifications
+Title: Certifications
+Complete MLOps Bootcamp with 10+ Projects, Udemy, July 2025
+Focused on end-to-end MLOps pipelines including CI/CD, MLflow, and deployment.
+MLOps Bootcamp: Mastering AI Operations, Udemy, June 2024
+Implemented full MLOps lifecycle using Flask and MLflow.
+
+Chunk 8: Education
+Title: Education
+Institution: SVERI’s College of Engineering, Pandharpur, Maharashtra
+Bachelor of Technology in Electronics and Telecommunication Engineering
+Graduated May 2024 with 81.71 percent
+Diploma in Electronics and Telecommunication Engineering
+Graduated May 2021 with 91.73 percent
+Strong foundation in electronics, signal processing, and communication systems applied to AI, machine learning, and software projects.
+
+Chunk 9: Blogging and Knowledge Sharing
+Title: Technical Blogging
+Supervised, Unsupervised, and Beyond: Machine Learning Techniques Simplified
+Explained core machine learning paradigms using real-world examples such as spam filtering and clustering.
+Comprehensive Docker Guide: Containerizing Flask Applications
+Covered Docker fundamentals and deployment of Flask-based machine learning applications.
+
+Chunk 10: Languages and Soft Skills
+Title: Languages and Soft Skills
+Languages
+English, Marathi, Hindi
+Soft Skills
+Critical Thinking, Intellectual Rigor, Problem Solving, Understanding Business Needs
