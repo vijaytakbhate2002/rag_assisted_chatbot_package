@@ -6,6 +6,8 @@ embeddings in a Chroma collection.
 """
 
 import logging
+import config
+import joblib
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 import chromadb
 from chromadb.config import Settings
@@ -152,89 +154,14 @@ class BuildVectorDB:
         logger.info("Finished build for collection '%s'", getattr(self.collection, 'name', 'unknown'))
                 
 
-
-
-class AskToVectorDB:
-    """Helper to query a Chroma collection using SentenceTransformer embeddings.
-
-    Args:
-        collection (chromadb.api.models.Collection): A Chroma collection to query.
-        embedding_model (SentenceTransformer): Model used to embed queries.
-    """
-
-    def __init__(self, collection: chromadb.api.models.Collection, embedding_model: SentenceTransformer):
-        self.collection = collection
-        self.embedding_model = embedding_model
-        logger.info("AskToVectorDB initialized for collection '%s'", getattr(self.collection, 'name', 'unknown'))
-
-    def generate_embeddings(self, query: str) -> list:
-        """Generate an embedding vector for the provided query string.
-
-        Args:
-            query (str): Query string to be embedded.
-
-        Returns:
-            list: The generated embedding vector (as a plain Python list).
-        """
-        logger.debug("Generating embedding for query: %s", query)
-        emb = self.embedding_model.encode([query])
-        try:
-            return emb.tolist()
-        except Exception:
-            return [list(e) for e in emb]
-
-    def find_relevant_chunks(self, query_embeddings: list, n_results: int = 5) -> list:
-        """Query the collection using pre-computed embeddings and return results.
-
-        Args:
-            query_embeddings (list): Embedding vector(s) to query with.
-            n_results (int): Number of top results to return.
-
-        Returns:
-            list|dict: The raw result returned by the Chroma collection's query method.
-        """
-        logger.info("Querying collection for top %d results", n_results)
-        result = self.collection.query(
-            query_embeddings=query_embeddings,
-            n_results=n_results
-        )
-        logger.debug("Query returned result of type %s", type(result))
-        return result
-
-    def ask(self, query: str, n_results: int = 5):
-        """Embed a query and return top relevant chunks from the collection.
-
-        Args:
-            query (str): Natural language query to search for.
-            n_results (int): Number of top results to return.
-
-        Returns:
-            The raw result returned by `find_relevant_chunks`.
-        """
-        logger.info("Asking vector DB for query: %s", query)
-        query_embeddings = self.generate_embeddings(query)
-        relevant_chunks = self.find_relevant_chunks(
-            query_embeddings=query_embeddings,
-            n_results=n_results
-        )
-        logger.debug("Relevant chunks: %s", str(relevant_chunks)[:200])
-        return relevant_chunks
-
+    def saveDB(self, path: str = 'vectordb.pkl'):
+        """This function will save vectordb using chromas Built-in Persistence"""
+        self.collection.persist()
+        logger.info("VectorDB saved to %s", path)
 
 if __name__ == "__main__":
     # Example usage
-    import config
     builder = BuildVectorDB(directory_path=config.GITHUB_PDF_FOLDER)
     builder.build(chunk_size=300, chunk_overlap=100)
-
-    while True:
-        question = input("Enter your question (or 'exit' to quit): ")
-        if question.lower() == 'exit':
-            break    
-        asker = AskToVectorDB(
-            collection=builder.collection,
-            embedding_model=builder.embedding_model
-        )
-        response = asker.ask(question, n_results=3)
-        for doc in response['documents'][0]:
-            print(f"- {doc}")
+    builder.saveDB(path=config.VECTORDB_PATH)
+            
