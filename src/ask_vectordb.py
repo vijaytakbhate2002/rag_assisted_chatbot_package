@@ -8,9 +8,8 @@ import joblib
 from build_vectordb import BuildVectorDB
 
 
-logger = logging.getLogger(__name__)
-if not logger.handlers:
-    logging.basicConfig(level=logging.INFO)
+from logging_config import configure_file_logger
+logger = configure_file_logger(__name__) 
 
 
 

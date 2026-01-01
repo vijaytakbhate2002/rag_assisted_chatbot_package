@@ -15,9 +15,8 @@ from langchain_community.document_loaders import DirectoryLoader, PyMuPDFLoader
 from sentence_transformers import SentenceTransformer
 import uuid
 
-logger = logging.getLogger(__name__)
-if not logger.handlers:
-    logging.basicConfig(level=logging.INFO)
+from logging_config import configure_file_logger
+logger = configure_file_logger(__name__) 
 
 
 
@@ -106,6 +105,8 @@ class BuildVectorDB:
             return
 
         logger.info("Generating embeddings for %d chunks", len(chunks))
+        logger.info("Example of a chunk %s", chunks[0].metadata['file_path'].split("/")[-1])
+        
         try:
             texts = [str(chunk.page_content) for chunk in chunks]
             ids = [str(uuid.uuid4()) for _ in chunks]

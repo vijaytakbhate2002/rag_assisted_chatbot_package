@@ -8,26 +8,8 @@ import os
 from dotenv import load_dotenv
 import logging
 
-logger = logging.getLogger(__name__)
-logger.addHandler(logging.NullHandler())
-
-log_file = os.path.join(os.getcwd(), "logs.log")
-
-if not any(isinstance(h, logging.FileHandler) and h.baseFilename == log_file
-           for h in logger.handlers):
-    try:
-        os.makedirs(os.path.dirname(log_file), exist_ok=True)
-        handler = logging.FileHandler(log_file)
-        handler.setFormatter(
-            logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s")
-        )
-        handler.setLevel(logging.DEBUG)
-
-        logger.addHandler(handler)
-        logger.setLevel(logging.DEBUG)
-        logger.debug("Logging initialized to %s", log_file)
-    except Exception:
-        pass
+from logging_config import configure_file_logger
+logger = configure_file_logger(__name__)
 
 
 load_dotenv()
