@@ -3,12 +3,16 @@ import config
 from chromadb.config import Settings
 from sentence_transformers import SentenceTransformer
 import logging
+import os
+import joblib
 from build_vectordb import BuildVectorDB
 
 
 logger = logging.getLogger(__name__)
 if not logger.handlers:
     logging.basicConfig(level=logging.INFO)
+
+
 
 
 class AskToVectorDB:
@@ -19,10 +23,12 @@ class AskToVectorDB:
         embedding_model (SentenceTransformer): Model used to embed queries.
     """
 
-    def __init__(self, collection: chromadb.api.models.Collection, embedding_model: SentenceTransformer):
+    def __init__(self, collection: chromadb.api.models.Collection, embedding_model_name: str):
         self.collection = collection
-        self.embedding_model = embedding_model
+        self.embedding_model = SentenceTransformer(embedding_model_name)
         logger.info("AskToVectorDB initialized for collection '%s'", getattr(self.collection, 'name', 'unknown'))
+
+
 
     def generate_embeddings(self, query: str) -> list:
         """Generate an embedding vector for the provided query string.
@@ -39,6 +45,8 @@ class AskToVectorDB:
             return emb.tolist()
         except Exception:
             return [list(e) for e in emb]
+        
+
 
     def find_relevant_chunks(self, query_embeddings: list, n_results: int = 5) -> list:
         """Query the collection using pre-computed embeddings and return results.
@@ -58,6 +66,7 @@ class AskToVectorDB:
         logger.debug("Query returned result of type %s", type(result))
         return result
     
+
 
     def ask(self, query: str, n_results: int = 5):
         """Embed a query and return top relevant chunks from the collection.
@@ -79,20 +88,19 @@ class AskToVectorDB:
         return relevant_chunks
 
 
+
+
 if __name__ == "__main__":
-    # Example usage
-    builder = BuildVectorDB(directory_path=config.GITHUB_PDF_FOLDER)
-    builder.build(chunk_size=300, chunk_overlap=100)
-    
-    asker = AskToVectorDB(
-            collection=builder.collection,
-            embedding_model=builder.embedding_model
-        )
+    client = chromadb.PersistentClient(path=config.VECTORDB_PATH)
+    collection = client.get_collection(name="my_embeddings")
+
+    asker = AskToVectorDB(collection=collection, embedding_model_name=config.EMBEDDING_MODEL_NAME)
+    logger.info("Loaded persisted collection from %s", config.VECTORDB_PATH)
 
     while True:
         question = input("Enter your question (or 'exit' to quit): ")
         if question.lower() == 'exit':
-            break    
+            break
         response = asker.ask(question, n_results=3)
         for doc in response['documents'][0]:
             print(f"- {doc}")

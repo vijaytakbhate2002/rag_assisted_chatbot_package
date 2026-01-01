@@ -1,4 +1,5 @@
 GITHUB_USERNAME="vijaytakbhate2002"
 GITHUB_PDF_FOLDER = "scrapped_data/github_pdfs"
 METADATA_JSON_PATH = "scrapped_metadata/metadata.json"
-# VECTORDB_PATH = "vectordb_storage/vectordb.pkl"   
+VECTORDB_PATH = "vectordb_storage"
+EMBEDDING_MODEL_NAME = "all-MiniLM-L6-v2"

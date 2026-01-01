@@ -30,24 +30,19 @@ class BuildVectorDB:
         collection_name (str): Name of the Chroma collection to create/get.
     """
 
+
     def __init__(self, directory_path: str, embedding_model_name: str = "all-MiniLM-L6-v2", collection_name: str = "my_embeddings"):
-        """Construct the BuildVectorDB.
-
-        Initializes the Chroma client, creates or gets the specified collection and
-        loads the SentenceTransformer embedding model.
-        """
         self.directory_path = directory_path
-        self.client = chromadb.Client(
-            Settings(
-                persist_directory="./chroma_db",
-                anonymized_telemetry=False
-            )
-        )
+        
+        # Use PersistentClient instead of Client
+        # This automatically handles "saving" to the path
+        self.client = chromadb.PersistentClient(path=config.VECTORDB_PATH)
 
+        self.embedding_model_name = embedding_model_name
         self.embedding_model = SentenceTransformer(embedding_model_name)
         self.collection = self.client.get_or_create_collection(name=collection_name)
-        logger.info("Initialized BuildVectorDB(directory_path=%s, collection=%s, embedding_model=%s)",
-                    self.directory_path, collection_name, embedding_model_name)
+        
+        logger.info("Initialized Persistent ChromaDB at %s", config.VECTORDB_PATH)
 
 
     def load_documents(self):
@@ -153,15 +148,9 @@ class BuildVectorDB:
         self.generate_embeddings(chunks=chunks)
         logger.info("Finished build for collection '%s'", getattr(self.collection, 'name', 'unknown'))
                 
-
-    def saveDB(self, path: str = 'vectordb.pkl'):
-        """This function will save vectordb using chromas Built-in Persistence"""
-        self.collection.persist()
-        logger.info("VectorDB saved to %s", path)
+        
 
 if __name__ == "__main__":
     # Example usage
     builder = BuildVectorDB(directory_path=config.GITHUB_PDF_FOLDER)
     builder.build(chunk_size=300, chunk_overlap=100)
-    builder.saveDB(path=config.VECTORDB_PATH)
-            
