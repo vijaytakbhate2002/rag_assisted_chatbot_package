@@ -1,17 +1,14 @@
 import chromadb
-import config
+from . import config
 from chromadb.config import Settings
 from sentence_transformers import SentenceTransformer
-import logging
-import os
-import joblib
-from build_vectordb import BuildVectorDB
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
-from logging_config import configure_file_logger
+from .logging_config import configure_file_logger
 logger = configure_file_logger(__name__) 
-
-
 
 
 class AskToVectorDB:
