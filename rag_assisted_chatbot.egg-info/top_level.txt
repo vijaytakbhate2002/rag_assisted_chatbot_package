@@ -1,1 +1,1 @@
-rag_assisted_chatbot
+rag_assisted_bot
