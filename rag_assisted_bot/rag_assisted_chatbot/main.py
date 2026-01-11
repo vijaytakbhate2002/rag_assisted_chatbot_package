@@ -29,6 +29,7 @@ class RAGModel:
             None
         """
         client = chromadb.PersistentClient(path=self.vectordb_path)
+        print("--------- embeddings_name---------------", self.collection_name)
         self.collection = client.get_collection(name=self.collection_name)
         self.asker = AskToVectorDB(collection=self.collection, embedding_model_name=self.embedding_model_name)
 
@@ -137,3 +138,22 @@ class Assistant:
         }
 
 
+
+if __name__ == "__main__":
+    assistant = Assistant(
+                        gpt_model_name=GPT_MODEL_NAME,
+                        temperature=0.7,
+                        rag_activated=True
+                        )
+    
+    while True:
+        question = input("You: ")
+        if question == 'exit':
+            break
+        ai_response = assistant.chat_with_model(question)
+
+        print("Question Category:", ai_response['question_category'])
+        print("Answer -------------------------- :")
+        for key, value in ai_response['response'].model_dump().items():
+            print(f"{key}: {value}")
+        print("\n")

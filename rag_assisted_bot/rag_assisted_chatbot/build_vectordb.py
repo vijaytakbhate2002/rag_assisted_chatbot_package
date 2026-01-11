@@ -6,6 +6,7 @@ embeddings in a Chroma collection.
 """
 
 import logging
+from xmlrpc import client
 from rag_assisted_bot.rag_assisted_chatbot import config
 import joblib
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -14,10 +15,10 @@ from chromadb.config import Settings
 from langchain_community.document_loaders import DirectoryLoader, PyMuPDFLoader
 from sentence_transformers import SentenceTransformer
 import uuid
+from rag_assisted_bot.rag_assisted_chatbot.config import VECTORDB_PATH
 
 from rag_assisted_bot.rag_assisted_chatbot.logging_config import configure_file_logger
 logger = configure_file_logger(__name__) 
-
 
 
 class BuildVectorDB:
@@ -35,13 +36,14 @@ class BuildVectorDB:
         
         # Use PersistentClient instead of Client
         # This automatically handles "saving" to the path
-        self.client = chromadb.PersistentClient(path=config.VECTORDB_PATH)
-
+        self.client = chromadb.PersistentClient(path=VECTORDB_PATH)
+        print("---------------------------VECTORDB_PATH---------------------------", VECTORDB_PATH)
         self.embedding_model_name = embedding_model_name
         self.embedding_model = SentenceTransformer(embedding_model_name)
         self.collection = self.client.get_or_create_collection(name=collection_name)
+        print("------------------self.client.list_collections()-------------------", self.client.list_collections())
         
-        logger.info("Initialized Persistent ChromaDB at %s", config.VECTORDB_PATH)
+        logger.info("Initialized Persistent ChromaDB at %s", VECTORDB_PATH)
 
 
     def load_documents(self):
@@ -149,5 +151,21 @@ class BuildVectorDB:
         self.generate_embeddings(chunks=chunks)
         logger.info("Finished build for collection '%s'", getattr(self.collection, 'name', 'unknown'))
                 
-        
+
+if __name__ == "__main__":
+    directory_path = config.GITHUB_PDF_FOLDER
+    print(directory_path)
+    embedding_model_name = config.EMBEDDING_MODEL_NAME
+    collection_name = "my_embeddings"
+
+    vector_db_builder = BuildVectorDB(
+        directory_path=directory_path,
+        embedding_model_name=embedding_model_name,
+        collection_name=collection_name
+    )
+
+    vector_db_builder.build(
+        chunk_size=200,
+        chunk_overlap=200
+    )
 
