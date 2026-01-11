@@ -56,13 +56,13 @@ class Assistant:
 
     updated_conversation = conversation_prompt.copy()
 
-    def __init__(self, gpt_model_name:str, temperature:float, rag_activated:bool):
+    def __init__(self, gpt_model_name:str, temperature:float, vectordb_path:str, rag_activated:bool):
         self.gpt_model_name = gpt_model_name
         self.temperature = temperature
         self.rag_activated = rag_activated
         if self.rag_activated:
             self.rag_model = RAGModel(
-                                    vectordb_path=VECTORDB_PATH,
+                                    vectordb_path=vectordb_path,
                                     collection_name="my_embeddings",
                                     embedding_model_name=EMBEDDING_MODEL_NAME
                                     )
@@ -142,6 +142,7 @@ class Assistant:
 if __name__ == "__main__":
     assistant = Assistant(
                         gpt_model_name=GPT_MODEL_NAME,
+                        vectordb_path=VECTORDB_PATH,
                         temperature=0.7,
                         rag_activated=True
                         )

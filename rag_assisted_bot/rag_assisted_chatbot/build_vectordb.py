@@ -31,19 +31,19 @@ class BuildVectorDB:
     """
 
 
-    def __init__(self, directory_path: str, embedding_model_name: str = "all-MiniLM-L6-v2", collection_name: str = "my_embeddings"):
+    def __init__(self, directory_path: str, vectordb_path:str,  embedding_model_name: str = "all-MiniLM-L6-v2", collection_name: str = "my_embeddings"):
         self.directory_path = directory_path
         
         # Use PersistentClient instead of Client
         # This automatically handles "saving" to the path
-        self.client = chromadb.PersistentClient(path=VECTORDB_PATH)
-        print("---------------------------VECTORDB_PATH---------------------------", VECTORDB_PATH)
+        self.client = chromadb.PersistentClient(path=vectordb_path)
+        print("---------------------------vectordb_path---------------------------", vectordb_path)
         self.embedding_model_name = embedding_model_name
         self.embedding_model = SentenceTransformer(embedding_model_name)
         self.collection = self.client.get_or_create_collection(name=collection_name)
         print("------------------self.client.list_collections()-------------------", self.client.list_collections())
         
-        logger.info("Initialized Persistent ChromaDB at %s", VECTORDB_PATH)
+        logger.info("Initialized Persistent ChromaDB at %s", vectordb_path)
 
 
     def load_documents(self):
@@ -160,6 +160,7 @@ if __name__ == "__main__":
 
     vector_db_builder = BuildVectorDB(
         directory_path=directory_path,
+        vectordb_path=VECTORDB_PATH,
         embedding_model_name=embedding_model_name,
         collection_name=collection_name
     )
