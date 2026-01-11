@@ -29,10 +29,7 @@ class RAGModel:
             None
         """
         client = chromadb.PersistentClient(path=self.vectordb_path)
-        # self.collection = client.get_collection(name=self.collection_name)
-        self.collection = client.get_or_create_collection(
-        name=self.collection_name
-        )
+        self.collection = client.get_collection(name=self.collection_name)
         self.asker = AskToVectorDB(collection=self.collection, embedding_model_name=self.embedding_model_name)
 
     
