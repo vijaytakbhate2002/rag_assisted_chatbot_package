@@ -5,10 +5,6 @@ text into chunks, computes embeddings using SentenceTransformers, and stores
 embeddings in a Chroma collection.
 """
 
-import logging
-from xmlrpc import client
-from rag_assisted_bot.rag_assisted_chatbot import config
-import joblib
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 import chromadb
 from chromadb.config import Settings
@@ -16,8 +12,9 @@ from langchain_community.document_loaders import DirectoryLoader, PyMuPDFLoader
 from sentence_transformers import SentenceTransformer
 import uuid
 from rag_assisted_bot.rag_assisted_chatbot.config import VECTORDB_PATH
-
 from rag_assisted_bot.rag_assisted_chatbot.logging_config import configure_file_logger
+
+
 logger = configure_file_logger(__name__) 
 
 
@@ -34,8 +31,6 @@ class BuildVectorDB:
     def __init__(self, directory_path: str, vectordb_path:str,  embedding_model_name: str = "all-MiniLM-L6-v2", collection_name: str = "my_embeddings"):
         self.directory_path = directory_path
         
-        # Use PersistentClient instead of Client
-        # This automatically handles "saving" to the path
         self.client = chromadb.PersistentClient(path=vectordb_path)
         print("---------------------------vectordb_path---------------------------", vectordb_path)
         self.embedding_model_name = embedding_model_name
@@ -151,22 +146,3 @@ class BuildVectorDB:
         self.generate_embeddings(chunks=chunks)
         logger.info("Finished build for collection '%s'", getattr(self.collection, 'name', 'unknown'))
                 
-
-if __name__ == "__main__":
-    directory_path = config.GITHUB_PDF_FOLDER
-    print(directory_path)
-    embedding_model_name = config.EMBEDDING_MODEL_NAME
-    collection_name = "my_embeddings"
-
-    vector_db_builder = BuildVectorDB(
-        directory_path=directory_path,
-        vectordb_path=VECTORDB_PATH,
-        embedding_model_name=embedding_model_name,
-        collection_name=collection_name
-    )
-
-    vector_db_builder.build(
-        chunk_size=200,
-        chunk_overlap=200
-    )
-

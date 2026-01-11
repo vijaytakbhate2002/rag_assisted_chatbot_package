@@ -1,10 +1,3 @@
-"""Shared logging setup for the project.
-
-Provides a helper to configure module loggers with a file handler
-writing to `logs.log` in the project root. This keeps logging
-configuration consistent across modules.
-"""
-
 import logging
 import os
 from typing import Optional
@@ -43,24 +36,19 @@ def configure_file_logger(name: Optional[str] = None, log_file: Optional[str] = 
         logger.setLevel(level)
         logger.debug("Logging initialized to %s", log_file)
     except Exception:
-        # Never let logging setup break the application
         pass
 
-    # --- Runtime instrumentation for modules that import this logger ---
     try:
         import inspect
         import functools
         import sys
 
-        # Inspect the call stack to find the importing module's globals
         for frame_info in inspect.stack():
             frame = frame_info.frame
             module_name = frame.f_globals.get("__name__")
             if not module_name:
                 continue
 
-            # We only instrument the specific module that likely contains the classes
-            # we want to augment (e.g., 'rag_based_llm'). Skip generic or stdlib modules.
             if module_name.endswith("rag_based_llm") or module_name.endswith("rag_based_llm.py"):
                 module = sys.modules.get(module_name)
                 if not module:
@@ -69,7 +57,6 @@ def configure_file_logger(name: Optional[str] = None, log_file: Optional[str] = 
                 def _wrap_method(cls, method_name, pre_msg=None, post_msg=None, result_summary=None):
                     if not hasattr(cls, method_name):
                         return
-                    # Avoid double-wrapping
                     flag = f"__logging_wrapped_{method_name}__"
                     if getattr(cls, flag, False):
                         return
@@ -115,7 +102,6 @@ def configure_file_logger(name: Optional[str] = None, log_file: Optional[str] = 
                     setattr(cls, method_name, wrapped)
                     setattr(cls, flag, True)
 
-                # Candidate classes and methods to instrument
                 for cls_name, methods in {
                     'RAGModel': [
                         ('build_config', "RAGModel.build_config starting for %s", "RAGModel.build_config completed", None),
@@ -140,7 +126,6 @@ def configure_file_logger(name: Optional[str] = None, log_file: Optional[str] = 
                             pass
                 break
     except Exception:
-        # Keep instrumentation best-effort and non-fatal
         pass
 
     return logger

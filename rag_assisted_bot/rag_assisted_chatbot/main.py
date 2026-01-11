@@ -3,15 +3,15 @@ from rag_assisted_bot.rag_assisted_chatbot.output_structure import InterViewResp
 from rag_assisted_bot.rag_assisted_chatbot.prompts import conversation_prompt, question_category_prompt
 from rag_assisted_bot.rag_assisted_chatbot.references import full_resume, personal, project, soft_skills, others, education, experience
 from rag_assisted_bot.rag_assisted_chatbot.ask_vectordb import AskToVectorDB
-from rag_assisted_bot.rag_assisted_chatbot.config import GPT_MODEL_NAME, TOP_K_MATCHES, EMBEDDING_MODEL_NAME, VECTORDB_PATH
+from rag_assisted_bot.rag_assisted_chatbot.config import TOP_K_MATCHES, EMBEDDING_MODEL_NAME
 import chromadb
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, AIMessage
-import os
-
-
 from rag_assisted_bot.rag_assisted_chatbot.logging_config import configure_file_logger
+
+
 logger = configure_file_logger(__name__) 
+
 
 
 class RAGModel:
@@ -29,7 +29,6 @@ class RAGModel:
             None
         """
         client = chromadb.PersistentClient(path=self.vectordb_path)
-        print("--------- embeddings_name---------------", self.collection_name)
         self.collection = client.get_collection(name=self.collection_name)
         self.asker = AskToVectorDB(collection=self.collection, embedding_model_name=self.embedding_model_name)
 
@@ -56,14 +55,15 @@ class Assistant:
 
     updated_conversation = conversation_prompt.copy()
 
-    def __init__(self, gpt_model_name:str, temperature:float, vectordb_path:str, rag_activated:bool):
+
+    def __init__(self, gpt_model_name:str, temperature:float, collection_name:str, vectordb_path:str, rag_activated:bool):
         self.gpt_model_name = gpt_model_name
         self.temperature = temperature
         self.rag_activated = rag_activated
         if self.rag_activated:
             self.rag_model = RAGModel(
                                     vectordb_path=vectordb_path,
-                                    collection_name="my_embeddings",
+                                    collection_name=collection_name,
                                     embedding_model_name=EMBEDDING_MODEL_NAME
                                     )
             self.rag_model.build_config()
@@ -107,17 +107,13 @@ class Assistant:
 
         conversation_model, question_category_chain = self.build_chains(question_category_prompt)
         question_category = question_category_chain.invoke(question)
-        print(question_category, type(question_category))
-
         context=self.get_context_for_question_category(question_category=question_category.question_category)
-        print("Context used for question category:  ", context)
 
         rag_context = self.RAG_context_fetcher(
                                                     question=question,
                                                     n_results=TOP_K_MATCHES
                                                     ) if self.rag_activated else ""
 
-        print("RAG Context fetched: ", rag_context)
 
         self.updated_conversation = conversationUpdate(
                                                 conversation=self.updated_conversation,
@@ -137,24 +133,3 @@ class Assistant:
                 "question_category":question_category.question_category
         }
 
-
-
-if __name__ == "__main__":
-    assistant = Assistant(
-                        gpt_model_name=GPT_MODEL_NAME,
-                        vectordb_path=VECTORDB_PATH,
-                        temperature=0.7,
-                        rag_activated=True
-                        )
-    
-    while True:
-        question = input("You: ")
-        if question == 'exit':
-            break
-        ai_response = assistant.chat_with_model(question)
-
-        print("Question Category:", ai_response['question_category'])
-        print("Answer -------------------------- :")
-        for key, value in ai_response['response'].model_dump().items():
-            print(f"{key}: {value}")
-        print("\n")

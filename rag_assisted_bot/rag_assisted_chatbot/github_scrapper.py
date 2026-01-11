@@ -7,10 +7,10 @@ import markdown
 import os
 from dotenv import load_dotenv
 import logging
-
 from rag_assisted_bot.rag_assisted_chatbot.logging_config import configure_file_logger
-logger = configure_file_logger(__name__)
 
+
+logger = configure_file_logger(__name__)
 
 load_dotenv()
 
@@ -29,14 +29,13 @@ class GithubScrapper:
 
 
     AVOID_REPOS = ['The-Grand-Complete-Data-Science-Materials', 'Welcome-to-Open-Source', 'contribute-to-open-source', 'first-contributions']
-    # AVOID_REPOS = map(lambda x: x.lower(), AVOID_REPOS)
+
 
     def __init__(self, username:str, save_folder:str, metadata_save_folder:str) -> None:
         self.username = username
         self.github_restapi = f"https://api.github.com/users/{username}/repos?per_page=100"
         self.save_folder = save_folder
         self.metadata_save_folder = metadata_save_folder
-
 
 
     def getProfileInfo(self) -> list:
@@ -53,7 +52,6 @@ class GithubScrapper:
         return response.json()
 
     
-
     def getRepoInfo(self, profile_metadata:list) -> list:
         """
         This functin will iterate through every readme file meatadata and return list of required metadata of respective repositories
@@ -125,7 +123,6 @@ class GithubScrapper:
         return readme_contents
     
 
-    
     def saveAsPDF(self, repo_info:dict) -> None:
         """
         Args: 
@@ -213,11 +210,3 @@ class GithubScrapper:
             self.saveAsPDF(repo_info=repo_info)
 
         
-
-if __name__ == "__main__":
-    import config
-    github_scrapper = GithubScrapper(username=config.GITHUB_USERNAME, 
-                                     save_folder=config.GITHUB_PDF_FOLDER,
-                                     metadata_save_folder=config.METADATA_JSON_PATH)
-    github_scrapper.scrap()
-
