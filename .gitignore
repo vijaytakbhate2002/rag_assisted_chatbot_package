@@ -6,3 +6,4 @@ env
 dev_env
 logs.log
 test
+temp*
