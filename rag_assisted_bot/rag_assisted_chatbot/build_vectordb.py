@@ -151,7 +151,3 @@ class BuildVectorDB:
                 
         
 
-if __name__ == "__main__":
-    # Example usage
-    builder = BuildVectorDB(directory_path=config.GITHUB_PDF_FOLDER)
-    builder.build(chunk_size=300, chunk_overlap=100)
