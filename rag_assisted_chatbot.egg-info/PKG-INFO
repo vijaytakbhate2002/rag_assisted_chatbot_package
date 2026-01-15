@@ -146,7 +146,7 @@ Requires-Dist: python-dateutil==2.9.0.post0
 Requires-Dist: python-dotenv==1.2.1
 Requires-Dist: PyYAML==6.0.3
 Requires-Dist: pyzmq==27.1.0
-Requires-Dist: referencing==0.37.0
+Requires-Dist: referencing<0.37.0,>=0.31.0
 Requires-Dist: regex==2025.11.3
 Requires-Dist: reportlab==4.4.7
 Requires-Dist: requests==2.32.5
@@ -222,7 +222,13 @@ Dynamic: summary
 - Builds a persistent Chroma vector store from PDF content using SentenceTransformers embeddings.
 - Queries the vector DB to fetch top-k relevant text chunks for a question (RAG).
 - Uses an LLM (e.g., `gpt-5-mini` via `langchain-openai`) with structured output to produce interview-style responses.
-- Packaged for easy reuse: import `Assistant`, `BuildVectorDB`, `AskToVectorDB`, and `GithubScrapper`.
+- Packaged for easy reuse: import `Assistant`, `BuildVectorDB`, `AskToVectorDB`, and `GithubScrapper` from the package namespace. Example:
+
+```python
+from rag_assisted_bot.rag_assisted_chatbot import Assistant, BuildVectorDB, AskToVectorDB, GithubScrapper
+```
+
+(When installed via pip the package name is `rag-assisted-chatbot`.)
 
 ---
 
@@ -271,19 +277,20 @@ python -m pip install -r requirements.txt
 
 ## ⚙️ Configuration
 
-Project configuration values are in `rag_assisted_chatbot/config.py`:
+Project configuration values are in `rag_assisted_bot/rag_assisted_chatbot/config.py`:
 
-- `GITHUB_USERNAME` — username to scrape
-- `GITHUB_PDF_FOLDER` — folder to save generated PDFs
-- `METADATA_JSON_PATH` — metadata file location
-- `VECTORDB_PATH` — path for persistent ChromaDB storage
-- `EMBEDDING_MODEL_NAME` — embedding model (default `all-MiniLM-L6-v2`)
-- `TOP_K_MATCHES` — number of RAG results to include
-- `GPT_MODEL_NAME` — model used by the assistant (default `gpt-5-mini`)
+- `GITHUB_USERNAME` — username to scrape (default: `"vijaytakbhate2002"`)
+- `GITHUB_PDF_FOLDER` — folder to save generated PDFs (default: `"rag_assisted_bot/scrapped_data/github_pdfs"`)
+- `METADATA_JSON_PATH` — metadata file location (default: `"scrapped_metadata/metadata.json"`)
+- `VECTORDB_PATH` — path for persistent ChromaDB storage (default: `<project_root>/vectordb`)
+- `COLLECTION_NAME` — Chroma collection name (default: `"my_embeddings"`)
+- `EMBEDDING_MODEL_NAME` — embedding model (default: `"all-MiniLM-L6-v2"`)
+- `TOP_K_MATCHES` — number of RAG results to include (default: `3`)
+- `GPT_MODEL_NAME` — model used by the assistant (default: `"gpt-5-mini"`)
 
 Environment variables:
 
-- `TOKEN_GITHUB` — **required** GitHub personal access token for scraping private/read limits.
+- `TOKEN_GITHUB` — **required** GitHub personal access token (the `GithubScrapper` will raise a `RuntimeError` if not set).
 
 ---
 
@@ -292,8 +299,8 @@ Environment variables:
 1) Scrape READMEs and save PDFs
 
 ```python
-from rag_assisted_chatbot import GithubScrapper
-import rag_assisted_chatbot.config as cfg
+from rag_assisted_bot.rag_assisted_chatbot import GithubScrapper
+import rag_assisted_bot.rag_assisted_chatbot.config as cfg
 
 scraper = GithubScrapper(
     username=cfg.GITHUB_USERNAME,
@@ -306,20 +313,31 @@ scraper.scrap()
 2) Build the persistent vector database
 
 ```python
-from rag_assisted_chatbot import BuildVectorDB
-import rag_assisted_chatbot.config as cfg
+from rag_assisted_bot.rag_assisted_chatbot import BuildVectorDB
+import rag_assisted_bot.rag_assisted_chatbot.config as cfg
 
-builder = BuildVectorDB(directory_path=cfg.GITHUB_PDF_FOLDER)
+builder = BuildVectorDB(
+    directory_path=cfg.GITHUB_PDF_FOLDER,
+    vectordb_path=cfg.VECTORDB_PATH,
+    embedding_model_name=cfg.EMBEDDING_MODEL_NAME,
+    collection_name=cfg.COLLECTION_NAME
+)
 builder.build(chunk_size=300, chunk_overlap=100)
 ```
 
 3) Run the assistant (interactive programmatic use)
 
 ```python
-from rag_assisted_chatbot import Assistant
-import rag_assisted_chatbot.config as cfg
+from rag_assisted_bot.rag_assisted_chatbot import Assistant
+import rag_assisted_bot.rag_assisted_chatbot.config as cfg
 
-assistant = Assistant(gpt_model_name=cfg.GPT_MODEL_NAME, temperature=0.7, rag_activated=True)
+assistant = Assistant(
+    gpt_model_name=cfg.GPT_MODEL_NAME,
+    temperature=0.7,
+    collection_name=cfg.COLLECTION_NAME,
+    vectordb_path=cfg.VECTORDB_PATH,
+    rag_activated=True
+)
 result = assistant.chat_with_model("Tell me about your key MLOps achievements")
 print(result['question_category'])
 print(result['response'].model_dump())
@@ -328,12 +346,12 @@ print(result['response'].model_dump())
 4) Query the Vector DB directly
 
 ```python
-from rag_assisted_chatbot.ask_vectordb import AskToVectorDB
+from rag_assisted_bot.rag_assisted_chatbot.ask_vectordb import AskToVectorDB
 import chromadb
-import rag_assisted_chatbot.config as cfg
+import rag_assisted_bot.rag_assisted_chatbot.config as cfg
 
 client = chromadb.PersistentClient(path=cfg.VECTORDB_PATH)
-collection = client.get_collection(name="my_embeddings")
+collection = client.get_collection(name=cfg.COLLECTION_NAME)
 asker = AskToVectorDB(collection=collection, embedding_model_name=cfg.EMBEDDING_MODEL_NAME)
 res = asker.ask("Explain your role in the Medical Insurance project", n_results=3)
 print(res['documents'][0])
@@ -349,7 +367,7 @@ print(res['documents'][0])
 4. `AskToVectorDB` embeds queries and queries ChromaDB for top-k chunks.
 5. `Assistant` obtains a category for the question, fetches RAG context (top-k chunks), and calls an LLM with a `SystemMessage` + retrieved context to provide a structured `InterViewResponse`.
 
-Structured LLM output uses `pydantic` models from `rag_assisted_chatbot/output_structure.py` (fields include `response_message`, `reference_links`, `confidence_score`, `follow_up_question`).
+Structured LLM output uses `pydantic` models from `rag_assisted_bot/rag_assisted_chatbot/output_structure.py` (fields include `response_message`, `reference_links`, `confidence_score`, `follow_up_question`).
 
 ---
 
@@ -357,25 +375,28 @@ Structured LLM output uses `pydantic` models from `rag_assisted_chatbot/output_s
 
 Key files and modules:
 
-- `rag_assisted_chatbot/` — package modules
-  - `github_scrapper.py` — GitHub README → PDF
-  - `build_vectordb.py` — builds & persists ChromaDB embeddings
-  - `ask_vectordb.py` — queries vector DB
-  - `main.py` — `Assistant` class and CLI-style loop
+- `rag_assisted_bot/rag_assisted_chatbot/` — package modules
+  - `github_scrapper.py` — GitHub README → PDF (method: `scrap()`)
+  - `build_vectordb.py` — builds & persists ChromaDB embeddings (`BuildVectorDB`)
+  - `ask_vectordb.py` — queries vector DB (`AskToVectorDB`)
+  - `main.py` — `Assistant` class and RAG orchestration
   - `prompts.py`, `references.py` — prompts and static resume content
-  - `output_structure.py` — pydantic models for structured outputs
-  - `config.py` — defaults you can edit
-- `scrapped_data/`, `scrapped_metadata/` — output folders used by scrapper
-- `vectordb_storage/` — persistent ChromaDB files
+  - `output_structure.py` — pydantic models for structured outputs (`InterViewResponse`, `QuestionCategory`)
+  - `config.py` — defaults you can edit (paths & model names)
+- Output folders created at runtime:
+  - `rag_assisted_bot/scrapped_data/` — PDFs (default: `rag_assisted_bot/scrapped_data/github_pdfs`)
+  - `scrapped_metadata/` — metadata JSON (default: `scrapped_metadata/metadata.json`)
+- `vectordb/` (default persistent ChromaDB storage path)
+
 
 ---
 
 ## 🔧 Troubleshooting & tips
 
-- Missing GitHub token: `GithubScrapper` raises a runtime error if `TOKEN_GITHUB` is not set.
-- If embeddings don't persist, ensure `VECTORDB_PATH` is writable and `chromadb` version is compatible.
-- PDF loading requires `PyMuPDF` (package name `PyMuPDF`).
-- Check `logs.log` in the project root for detailed runtime logs.
+- Missing GitHub token: `GithubScrapper` will raise `RuntimeError` at import time if `TOKEN_GITHUB` is not set in the environment.
+- If embeddings don't persist, ensure `VECTORDB_PATH` is writable and compatible with your `chromadb` version.
+- PDF loading requires `PyMuPDF` (package name `PyMuPDF`) and the `langchain_community.document_loaders.PyMuPDFLoader`.
+- Check `logs.log` in the project root for runtime logs.
 
 ---
 
