@@ -7,3 +7,5 @@ dev_env
 logs.log
 test
 temp*
+temp.ipynb
+data/

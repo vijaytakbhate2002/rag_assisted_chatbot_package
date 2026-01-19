@@ -17,6 +17,6 @@ class InterViewResponse(BaseModel):
         output should be answer of HR question based on resume provided."""
     response_message: Optional[str] = Field(description="response message to HR question based on context provided.")
     reference_links: Optional[List[str]] = Field(description="List of reference links of github projects, blogs, articles etc.")
-    confidence_score: Optional[float] = Field(description="Confidence score of the response message ranging from 0 to 1.")
-    follow_up_question: Optional[str] = Field(description="A relevant follow-up question to keep the interview engaging.")
-    additional_resources: Optional[List[str]] = Field(description="List of additional resources for further reading or exploration.")
+    # confidence_score: Optional[float] = Field(description="Confidence score of the response message ranging from 0 to 1.")
+    # follow_up_question: Optional[str] = Field(description="A relevant follow-up question to keep the interview engaging.")
+    # additional_resources: Optional[List[str]] = Field(description="List of additional resources for further reading or exploration.")

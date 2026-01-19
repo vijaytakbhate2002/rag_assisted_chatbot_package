@@ -6,11 +6,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-
-from rag_assisted_bot.rag_assisted_chatbot.logging_config import configure_file_logger
-logger = configure_file_logger(__name__) 
-
-
 class AskToVectorDB:
     """Helper to query a Chroma collection using SentenceTransformer embeddings.
 
@@ -22,8 +17,6 @@ class AskToVectorDB:
     def __init__(self, collection: chromadb.api.models.Collection, embedding_model_name: str):
         self.collection = collection
         self.embedding_model = SentenceTransformer(embedding_model_name)
-        logger.info("AskToVectorDB initialized for collection '%s'", getattr(self.collection, 'name', 'unknown'))
-
 
 
     def generate_embeddings(self, query: str) -> list:
@@ -35,7 +28,6 @@ class AskToVectorDB:
         Returns:
             list: The generated embedding vector (as a plain Python list).
         """
-        logger.debug("Generating embedding for query: %s", query)
         emb = self.embedding_model.encode([query])
         try:
             return emb.tolist()
@@ -54,12 +46,10 @@ class AskToVectorDB:
         Returns:
             list|dict: The raw result returned by the Chroma collection's query method.
         """
-        logger.info("Querying collection for top %d results", n_results)
         result = self.collection.query(
             query_embeddings=query_embeddings,
             n_results=n_results
         )
-        logger.debug("Query returned result of type %s", type(result))
         return result
     
 
@@ -74,13 +64,11 @@ class AskToVectorDB:
         Returns:
             The raw result returned by `find_relevant_chunks`.
         """
-        logger.info("Asking vector DB for query: %s", query)
         query_embeddings = self.generate_embeddings(query)
         relevant_chunks = self.find_relevant_chunks(
             query_embeddings=query_embeddings,
             n_results=n_results
         )
-        logger.debug("Relevant chunks: %s", str(relevant_chunks)[:200])
         return relevant_chunks
 
 

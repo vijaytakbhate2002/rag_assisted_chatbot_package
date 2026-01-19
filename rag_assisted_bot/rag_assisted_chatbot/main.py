@@ -7,11 +7,6 @@ from rag_assisted_bot.rag_assisted_chatbot.config import TOP_K_MATCHES, EMBEDDIN
 import chromadb
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, AIMessage
-from rag_assisted_bot.rag_assisted_chatbot.logging_config import configure_file_logger
-
-
-logger = configure_file_logger(__name__) 
-
 
 
 class RAGModel:

@@ -1,5 +1,5 @@
 from langchain_core.prompts import PromptTemplate
-from langchain_core.messages import SystemMessage, AIMessage, HumanMessage
+from langchain_core.messages import SystemMessage
 from .references import full_resume
 from rag_assisted_bot.rag_assisted_chatbot.config import TOP_K_MATCHES 
 
