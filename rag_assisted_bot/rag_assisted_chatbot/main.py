@@ -102,7 +102,7 @@ class Assistant:
 
         conversation_model, question_category_chain = self.build_chains(question_category_prompt)
         question_category = question_category_chain.invoke(question)
-        context=self.get_context_for_question_category(question_category=question_category.question_category)
+        # context=self.get_context_for_question_category(question_category=question_category.question_category)
 
         rag_context = self.RAG_context_fetcher(
                                                     question=question,
@@ -116,7 +116,8 @@ class Assistant:
                                                                         question_category=question_category.question_category
                                                                     ),
                                                 rag_context=rag_context,
-                                                top_k_matches=TOP_K_MATCHES
+                                                top_k_matches=TOP_K_MATCHES,
+                                                rag_activation = question_category.rag_activation
                                                     )
 
         self.updated_conversation.append(HumanMessage(question))

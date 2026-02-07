@@ -12,6 +12,7 @@ question_category_prompt = PromptTemplate(
     {question}
 
     choose one category from ["project", "personal", "experience", "education", "soft_skills", "other"] this and answer in single word.
+    Plus provide one word response does this question needs to activate RAG model or not. Answer in "yes" or "no".
     """,
     input_variables=['question']
 )
