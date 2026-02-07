@@ -52,7 +52,7 @@ def load_readme():
 
 setup(
     name=PACKAGE_NAME,
-    version="2.0.0",
+    version="3.0.0",
     description="RAG Assisted Chatbot Package",
     long_description=load_readme(),
     long_description_content_type="text/markdown",
