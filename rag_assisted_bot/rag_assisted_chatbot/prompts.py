@@ -36,6 +36,8 @@ conversation_prompt = [
         Other than the resume I am going to provide you top {TOP_K_MATCHES} relevant chunks from the RAG model.
         Use them to answer the question if they are relevant to the question asked.
         If they are not relevant, do not use them in the answer.
+
+        Warning: Do not generate reference links by your own, only use the reference links provided by the RAG model if they are relevant to the question asked. If they are not relevant, do not include them in the answer.
         """
     )
 ]

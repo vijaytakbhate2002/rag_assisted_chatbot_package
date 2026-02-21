@@ -3,16 +3,18 @@ Vijay Takbhate is a Data Science and MLOps enthusiast skilled in Python, SQL, ML
 He has worked on multiple end-to-end machine learning projects, focusing on model deployment and automation.
 
 Projects include:
-1. Medical Insurance Cost Prediction (SVR): Built a predictive system to estimate medical insurance charges
-   using demographic and lifestyle factors like age, BMI, smoking status, and region. Improved R² from 0.72 to 0.86
-   and reduced MAE from 0.099 to 0.034. Developed a Flask web application, containerized with Docker, and deployed on AWS EC2.
-   Implemented MLOps best practices like MLflow tracking, GitHub Actions CI/CD, and Kubeflow pipelines.
-   Repository: https://github.com/vijaytakbhate2002/medical-insurance-cost-prediction-SVR.git
+1. AI-Powered Portfolio & Resume Assistant for HR | Oct 2025
+• Built a virtual HR interview system powered by multi-LLM orchestration (LangChain + GPT-5-mini).
+• Automated dynamic question generation, response validation, and skill classification.
+• Integrated MLflow for experiment tracking and GitHub Actions for CI/CD automation.
+• Deployed using Flask + Docker on AWS EC2.
+• Tech Stack: Python, Flask, LangChain, GPT-5-mini, MLflow, Docker, AWS EC2.
 
-2. Turbofan Jet Engine Lifecycle Prediction (CNN + LSTM): Developed a Remaining Useful Life (RUL) prediction
-   system using NASA CMAPSS dataset. Built a hybrid CNN + LSTM model for temporal and spatial patterns.
-   Implemented an MLOps pipeline with data processing, training, and deployment using AWS and Docker.
-   Repository: https://github.com/vijaytakbhate2002/nasa_turbofan_engine_life_cycle_prediction.git
+2. Medical Insurance Cost Prediction (SVR) | Sep 2025
+• Developed an SVR model achieving R² = 0.86 and MAE = 0.034 using demographic and lifestyle features.
+• Built a Flask web app, containerized with Docker, and deployed on AWS EC2.
+• Integrated MLflow for experiment tracking and Kubeflow for automated pipeline management.
+• Tech Stack: Python, Flask, Docker, MLflow, Kubeflow, AWS EC2.
 
 Other projects: https://github.com/vijaytakbhate2002
 
@@ -57,37 +59,36 @@ LinkedIn: linkedin.com/in/vijay-takbhate-b9231a236
 Kaggle: kaggle.com/vijay20213
 
 Summary:
-MLOps & AI/ML Engineering professional with 1.5+ years of experience building and deploying scalable machine learning systems, cloud-based AI solutions, and automation pipelines. Skilled in LLM integration (GPT-5-mini, LangChain), MLflow experiment tracking, CI/CD automation, and containerized deployments using AWS EC2 and Docker. Adept at developing predictive models, optimizing data workflows, and creating reproducible MLOps ecosystems that strengthen operational efficiency and system reliability. Strong ability to translate business needs into production-ready ML systems aligned with compliance and real-world impact.
+Risk Analyst with hands-on experience in applied machine learning, MLOps, and GenAI systems. Skilled in
+building, evaluating, and deploying end-to-end ML solutions using Python, MLflow, Docker, and cloud
+platforms, with strong exposure to risk and decision-focused use cases.
+
+Programming & Backend: 
+Python, R, Flask, SQL (MySQL)
+Machine Learning & Data Science: Regression, Classification, Feature Engineering, Model Evaluation
+Generative AI & LLMs: LangChain, LLM Orchestration, Retrieval-Augmented Generation (RAG),
+Prompt Engineering, GPT-5-mini 
+Embeddings & Vector Databases: all-MiniLM-L6-v2, ChromaDB, Semantic Search, Chunking Strategies
+MLOps & DevOps: MLflow, Docker, GitHub Actions (CI/CD)
+Data & Analytics: Databricks, Metabase
+Cloud & Deployment: AWS EC2, AWS Lambda, Model Deployment
 """
 
 # ----------------- PROJECTS -----------------
 project = """
-1. Market Price Realtime Analysis & Prediction Dashboard App | Nov 2025 – Present
-• Designed an AI-driven dashboard delivering real-time market prices for 374 agricultural commodities using official APIs.
-• Processed 75M+ historical records (2001–2025) using RAM-efficient ETL pipelines and AWS S3 batch workflows.
-• Developed ML models to forecast commodity price trends for farmers, policymakers, and supply chain stakeholders.
-• Built a React frontend and Flask/FastAPI backend with containerized deployment on AWS EC2 using Docker.
-• Implemented Kubeflow pipelines for automated ML workflows and GitHub Actions for CI/CD and model orchestration.
-• Tech Stack: Python, React, Flask, FastAPI, Docker, AWS EC2/S3, Kubeflow, PostgreSQL, Pandas, scikit-learn, TensorFlow, LangChain.
-
-2. AI-Powered Portfolio & Resume Assistant for HR | Oct 2025
+1. AI-Powered Portfolio & Resume Assistant for HR | Oct 2025
 • Built a virtual HR interview system powered by multi-LLM orchestration (LangChain + GPT-5-mini).
 • Automated dynamic question generation, response validation, and skill classification.
 • Integrated MLflow for experiment tracking and GitHub Actions for CI/CD automation.
 • Deployed using Flask + Docker on AWS EC2.
 • Tech Stack: Python, Flask, LangChain, GPT-5-mini, MLflow, Docker, AWS EC2.
 
-3. Medical Insurance Cost Prediction (SVR) | Sep 2025
+2. Medical Insurance Cost Prediction (SVR) | Sep 2025
 • Developed an SVR model achieving R² = 0.86 and MAE = 0.034 using demographic and lifestyle features.
 • Built a Flask web app, containerized with Docker, and deployed on AWS EC2.
 • Integrated MLflow for experiment tracking and Kubeflow for automated pipeline management.
 • Tech Stack: Python, Flask, Docker, MLflow, Kubeflow, AWS EC2.
 
-4. Turbofan Jet Engine Lifecycle Prediction (CNN + LSTM) | Aug 2025
-• Predicted Remaining Useful Life (RUL) using NASA CMAPSS dataset for predictive maintenance.
-• Designed hybrid CNN + LSTM architecture to capture spatial + temporal engine telemetry patterns.
-• Implemented automated MLOps workflow using DVC, Dagshub, MLflow, and Docker.
-• Tech Stack: Git, DVC, Dagshub, MLflow, AWS, Docker.
 """
 
 # ----------------- EXPERIENCE -----------------

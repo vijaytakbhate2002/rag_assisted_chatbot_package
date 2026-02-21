@@ -13,7 +13,8 @@ from sentence_transformers import SentenceTransformer
 import uuid
 from rag_assisted_bot.rag_assisted_chatbot.config import VECTORDB_PATH
 from rag_assisted_bot.rag_assisted_chatbot.logging_config import configure_file_logger
-
+from typing import Union
+import json
 
 logger = configure_file_logger(__name__) 
 
@@ -28,9 +29,10 @@ class BuildVectorDB:
     """
 
 
-    def __init__(self, directory_path: str, vectordb_path:str,  embedding_model_name: str = "all-MiniLM-L6-v2", collection_name: str = "my_embeddings"):
+    def __init__(self, directory_path: str, vectordb_path:str, metadatas_path:str=None,  embedding_model_name: str = "all-MiniLM-L6-v2", collection_name: str = "my_embeddings"):
         self.directory_path = directory_path
-        
+        self.metadatas_path = metadatas_path
+    
         self.client = chromadb.PersistentClient(path=vectordb_path)
         print("---------------------------vectordb_path---------------------------", vectordb_path)
         self.embedding_model_name = embedding_model_name
@@ -39,6 +41,25 @@ class BuildVectorDB:
         print("------------------self.client.list_collections()-------------------", self.client.list_collections())
         
         logger.info("Initialized Persistent ChromaDB at %s", vectordb_path)
+    
+
+    def read_metadata(self) -> Union[list, None]:
+        """Read metadata from a JSON file if metadatas_path is set."""
+        if not self.metadatas_path:
+            logger.warning("No metadatas_path provided; skipping metadata loading.")
+            print("No metadatas_path provided; skipping metadata loading.")
+            return None
+
+        try:
+            with open(self.metadatas_path, 'r') as f:
+                metadatas = json.load(f)
+            logger.info("Loaded metadata for %d documents from %s", len(metadatas), self.metadatas_path)
+            print("Loaded metadata for %d documents from %s", len(metadatas), self.metadatas_path)
+            return metadatas['github']
+        except Exception as e:
+            logger.exception("Failed to read metadata from %s: %s", self.metadatas_path, e)
+            print("Failed to read metadata from %s: %s", self.metadatas_path, e)
+            return None
 
 
     def load_documents(self):
@@ -79,12 +100,15 @@ class BuildVectorDB:
         )
 
         split_doc = splitter.split_documents(documents=documents)
+        document_names = []
+        for chunk in split_doc:
+            document_names.append(chunk.metadata["source"])
         logger.info("Split into %d chunks", len(split_doc))
 
-        return split_doc
+        return split_doc, document_names
 
 
-    def generate_embeddings(self, chunks: list) -> None:
+    def generate_embeddings(self, chunks: list, metadatas:list=None) -> None:
         """Generate embeddings for document chunks and add them to the Chroma collection.
 
         This method encodes document chunk text in batches for efficiency, converts
@@ -120,7 +144,8 @@ class BuildVectorDB:
             self.collection.add(
                 ids=ids,
                 embeddings=embeddings,
-                documents=texts
+                documents=texts,
+                metadatas = metadatas
             )
             logger.info("Added %d embeddings to collection '%s'", len(ids), getattr(self.collection, 'name', 'unknown'))
         except Exception as e:
@@ -128,21 +153,16 @@ class BuildVectorDB:
             raise
 
 
-    def build(self, chunk_size: int = 200, chunk_overlap: int = 200) -> None:
+    def build(self, chunks, metadatas) -> list:
         """High-level convenience method to build the vector DB end-to-end.
 
         Loads documents, splits them into chunks and generates embeddings which are
         stored in the configured Chroma collection.
-        """
-        logger.info("Starting build (chunk_size=%d, chunk_overlap=%d)", chunk_size, chunk_overlap)
-        documents = self.load_documents()
-        chunks = self.split_documents(
-            documents=documents,
-            chunk_size=chunk_size,
-            chunk_overlap=chunk_overlap
-        )
 
+        Returns:
+            List[str]: List of document names corresponding to the chunks added to the collection.
+        """
         # Generate and add embeddings to the collection
-        self.generate_embeddings(chunks=chunks)
+        self.generate_embeddings(chunks=chunks, metadatas=metadatas)
         logger.info("Finished build for collection '%s'", getattr(self.collection, 'name', 'unknown'))
                 

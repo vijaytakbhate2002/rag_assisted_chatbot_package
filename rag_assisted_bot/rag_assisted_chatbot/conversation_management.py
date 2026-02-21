@@ -27,7 +27,7 @@ def conversationUpdate(conversation:list, context:str, rag_context:Union[str, li
             Use them to answer the question if they are relevant to the question asked.
             If they are not relevant, do not use them in the answer.
 
-            you can use reference links or facts from rag context, but do not make up any links.
+            Warning: Do not generate reference links by your own, only use the reference links provided by the RAG model if they are relevant to the question asked. If they are not relevant, do not include them in the answer.
             
             RAG Context:
             {rag_context}
@@ -40,6 +40,8 @@ def conversationUpdate(conversation:list, context:str, rag_context:Union[str, li
             Use the resume information below to answer naturally, confidently, and concisely.
             Keep your tone conversational yet professional to maintain engagement.
 
+            Warning: Do not generate reference links by your own, only use the reference links provided by the resume.
+                                        
             Resume:
             {context}
 

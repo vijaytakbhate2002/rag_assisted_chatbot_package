@@ -31,8 +31,9 @@ class RAGModel:
     def ask(self, question, n_results) -> str:
         """ This is helper function to ask question to asked """
         response = self.asker.ask(question, n_results=n_results) 
-        documents = response['documents']
-        return documents
+        documents = response['documents']   
+        metadatas = response['metadatas']
+        return documents, metadatas
 
 
 
@@ -72,9 +73,9 @@ class Assistant:
 
     def RAG_context_fetcher(self, question:str, n_results:int) -> str:
         """ This function fetches context from RAG model based on question asked."""
-        documents = self.rag_model.ask(question, n_results=n_results)
+        documents, metadatas = self.rag_model.ask(question, n_results=n_results)
         context = "\n".join([doc for doc in documents[0]])
-        return context
+        return context, metadatas
 
     
     def get_context_for_question_category(self, question_category:str) -> str:
@@ -102,12 +103,11 @@ class Assistant:
 
         conversation_model, question_category_chain = self.build_chains(question_category_prompt)
         question_category = question_category_chain.invoke(question)
-        # context=self.get_context_for_question_category(question_category=question_category.question_category)
 
-        rag_context = self.RAG_context_fetcher(
+        rag_context, metadatas = self.RAG_context_fetcher(
                                                     question=question,
                                                     n_results=TOP_K_MATCHES
-                                                    ) if self.rag_activated else ""
+                                                    ) if self.rag_activated else ("", [])
 
 
         self.updated_conversation = conversationUpdate(
@@ -126,6 +126,8 @@ class Assistant:
 
         return {
                 "response":  response,
-                "question_category":question_category.question_category
+                "question_category":question_category.question_category,
+                "rag_activation": question_category.rag_activation,
+                "metadatas": metadatas
         }
 
