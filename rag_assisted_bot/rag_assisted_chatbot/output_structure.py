@@ -9,7 +9,7 @@ class QuestionCategory(BaseModel):
         Literal["project", "personal", "experience", "education", "soft_skills", "others"]],
         "question category represent category of question"
     ] = "other"
-    rag_activation: Annotated[Union[str, Literal["yes", "no"]], "rag activation represent whether to activate RAG model or not"] = "yes"
+    rag_activation: Annotated[Union[str, Literal["yes", "no"]], "rag activation represent whether to activate RAG model or not"] = "no"
 
 
 

@@ -3,7 +3,6 @@ from langchain_core.messages import SystemMessage
 from .references import full_resume
 from rag_assisted_bot.rag_assisted_chatbot.config import TOP_K_MATCHES 
 
-
 question_category_prompt = PromptTemplate(
     template="""
     Please choose category of question provided below,
@@ -12,7 +11,10 @@ question_category_prompt = PromptTemplate(
     {question}
 
     choose one category from ["project", "personal", "experience", "education", "soft_skills", "other"] this and answer in single word.
-    Plus provide one word response does this question needs to activate RAG model or not. Answer in "yes" or "no".
+
+    Please decide whether the question requires fact checking or rag activation or not.
+    If the question is like "Hi", "How are you?" or "what is your name?" or "asking for contact information?" etc. then it does not require fact checking from my github readme files so return "no".
+    If the question is related to my projects or askng for project links, experience, education, technical skills, or any factual information related to me then it requires fact checking so return "yes".
     """,
     input_variables=['question']
 )

@@ -9,3 +9,5 @@ test
 temp*
 temp.ipynb
 data/
+.vscode/
+.idea/
