@@ -11,15 +11,15 @@ from chromadb.config import Settings
 from langchain_community.document_loaders import DirectoryLoader, PyMuPDFLoader
 from sentence_transformers import SentenceTransformer
 import uuid
-from rag_assisted_bot.rag_assisted_chatbot.config import VECTORDB_PATH
-from rag_assisted_bot.rag_assisted_chatbot.logging_config import configure_file_logger
+from rag_assisted_bots.ask_github.config import VECTORDB_PATH
+from rag_assisted_bots.ask_github.logging_config import configure_file_logger
 from typing import Union
 import json
 
 logger = configure_file_logger(__name__) 
 
 
-class BuildVectorDB:
+class GithubBuildVectorDB:
     """Helper to build a Chroma vector database from documents in a directory.
 
     Args:

@@ -1,1 +1,1 @@
-rag_assisted_bot
+rag_assisted_bots

@@ -11,3 +11,7 @@ temp.ipynb
 data/
 .vscode/
 .idea/
+test*
+logs*
+github_data/
+vector_db/

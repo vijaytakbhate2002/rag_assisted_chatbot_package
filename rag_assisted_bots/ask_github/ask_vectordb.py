@@ -1,12 +1,12 @@
 import chromadb
-from rag_assisted_bot.rag_assisted_chatbot import config
+from rag_assisted_bots.ask_github import config
 from chromadb.config import Settings
 from sentence_transformers import SentenceTransformer
 from dotenv import load_dotenv
 
 load_dotenv()
 
-class AskToVectorDB:
+class GithubAskToVectorDB:
     """Helper to query a Chroma collection using SentenceTransformer embeddings.
 
     Args:

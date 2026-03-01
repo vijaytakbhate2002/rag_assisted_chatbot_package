@@ -7,7 +7,7 @@ import markdown
 import os
 from dotenv import load_dotenv
 import logging
-from rag_assisted_bot.rag_assisted_chatbot.logging_config import configure_file_logger
+from rag_assisted_bots.ask_github.logging_config import configure_file_logger
 
 
 logger = configure_file_logger(__name__)
