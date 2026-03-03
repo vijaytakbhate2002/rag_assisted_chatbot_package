@@ -7,10 +7,6 @@ import markdown
 import os
 from dotenv import load_dotenv
 import logging
-from rag_assisted_bots.ask_github.logging_config import configure_file_logger
-
-
-logger = configure_file_logger(__name__)
 
 load_dotenv()
 
@@ -45,10 +41,8 @@ class GithubScrapper:
             list
         """
         url = f"https://api.github.com/users/{self.username}/repos?per_page=100"
-        logger.info("Fetching profile info for user %s from %s", self.username, url)
         response = requests.get(url, headers=self.HEADERS, verify=certifi.where())
         response.raise_for_status()
-        logger.debug("Profile info fetched: status=%s", response.status_code)
         return response.json()
 
     
@@ -76,22 +70,18 @@ class GithubScrapper:
             repo_url = repo_info['html_url']
 
             if repo_name in self.AVOID_REPOS:
-                logger.info("Skipping repo %s as it's in AVOID_REPOS list", repo_name)
                 print(f" Skipping repo {repo_name} as it's in AVOID_REPOS list")
                 continue
 
             repo_api = f"https://api.github.com/repos/{self.username}/{repo_name}/readme"
 
-            logger.debug("Requesting README for repo: %s url=%s", repo_name, repo_api)
             response = requests.get(repo_api, headers=self.HEADERS)
 
             if response.status_code != 200:
-                logger.warning("Failed to fetch REPO METADATA for %s, status=%s", repo_name, response.status_code)
                 print(response.status_code)
                 print(f"❌ Failed to fetch REPO METADATA for {repo_name}")
                 continue
 
-            logger.info("Successfully fetched REPO METADATA for %s", repo_name)
             print(f" Successfully fetched REPO METADATA for {repo_name}")
 
             data = response.json()  
@@ -114,12 +104,10 @@ class GithubScrapper:
             metadata = json.load(f)
         
         metadata['github'] = readme_contents
-        logger.info("Writing metadata to %s (%d repos)", self.metadata_save_folder, len(readme_contents))
 
         with open(self.metadata_save_folder, "w", encoding="utf-8") as f:
             json.dump(metadata, f, indent=4)
 
-        logger.debug("Wrote metadata to %s", self.metadata_save_folder)
         return readme_contents
     
 
@@ -133,18 +121,15 @@ class GithubScrapper:
             None
         """
         print("ENtered into save pdf...")
-        logger.info("saveAsPDF started for repo: %s", repo_info.get('repo_name', '<unknown>'))
         try:
             markdown_content = requests.get(repo_info['download_url']).content
             markdown_content = markdown_content.decode('utf-8')
             repo_name = repo_info['repo_name']
             repo_name = repo_name + ".pdf"
         except Exception as e:
-            logger.exception("Failed to fetch or decode markdown for repo: %s", repo_info.get('repo_name'))
             return print(e)
 
         print(f" ............................... {repo_name} ..............................................................")
-        logger.debug("Preparing HTML content for %s", repo_name)
 
         html_content = markdown.markdown(markdown_content, extensions=['extra', 'codehilite'])
 
@@ -173,20 +158,16 @@ class GithubScrapper:
 
         try:
             print(f"Converting to PDF: {output_path}...")
-            logger.info("Converting to PDF: %s", output_path)
             with open(output_path, "wb") as pdf_file:
                 pisa_status = pisa.CreatePDF(styled_html, dest=pdf_file)
             
             if pisa_status.err:
-                logger.error("Error generating PDF for %s", output_path)
                 print(f"Error generating PDF for {output_path}")
                 return False
             
-            logger.info("Successfully saved PDF to %s", output_path)
             print(f"Successfully saved PDF to {output_path}")
             return True
         except Exception as e:
-            logger.exception("Exception converting HTML to PDF for %s", output_path)
             print(f"Exception converting to PDF: {e}")
             return False
         
@@ -196,14 +177,7 @@ class GithubScrapper:
         This is pipeline function which combines all the required processes to scrap read files from github and save these into 
         pdf format
         """
-
-        logger.info("Starting scrap pipeline for user %s", self.username)
         profile_meatadata = self.getProfileInfo()
-        logger.debug("Fetched %d repositories from profile", len(profile_meatadata))
-
-        logger.info("scrap() exiting early (original behavior preserved)")
-        # return 
-        
         repos_meatadata = self.getRepoInfo(profile_metadata=profile_meatadata)
 
         for repo_info in repos_meatadata:

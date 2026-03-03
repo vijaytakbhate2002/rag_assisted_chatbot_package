@@ -1,6 +1,5 @@
 from langchain_core.messages import SystemMessage
 from typing import Union, List
-from rag_assisted_bots.ask_github.logging_config import configure_file_logger
 from rag_assisted_bots.ask_github.prompts import SystemPromptTemplate
 
 class ConversationManager:

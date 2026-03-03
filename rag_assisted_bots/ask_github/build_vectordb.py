@@ -11,12 +11,8 @@ from chromadb.config import Settings
 from langchain_community.document_loaders import DirectoryLoader, PyMuPDFLoader
 from sentence_transformers import SentenceTransformer
 import uuid
-from rag_assisted_bots.ask_github.config import VECTORDB_PATH
-from rag_assisted_bots.ask_github.logging_config import configure_file_logger
 from typing import Union
 import json
-
-logger = configure_file_logger(__name__) 
 
 
 class GithubBuildVectorDB:
@@ -39,25 +35,20 @@ class GithubBuildVectorDB:
         self.embedding_model = SentenceTransformer(embedding_model_name)
         self.collection = self.client.get_or_create_collection(name=collection_name)
         print("------------------self.client.list_collections()-------------------", self.client.list_collections())
-        
-        logger.info("Initialized Persistent ChromaDB at %s", vectordb_path)
-    
+            
 
     def read_metadata(self) -> Union[list, None]:
         """Read metadata from a JSON file if metadatas_path is set."""
         if not self.metadatas_path:
-            logger.warning("No metadatas_path provided; skipping metadata loading.")
             print("No metadatas_path provided; skipping metadata loading.")
             return None
 
         try:
             with open(self.metadatas_path, 'r') as f:
                 metadatas = json.load(f)
-            logger.info("Loaded metadata for %d documents from %s", len(metadatas), self.metadatas_path)
             print("Loaded metadata for %d documents from %s", len(metadatas), self.metadatas_path)
             return metadatas['github']
         except Exception as e:
-            logger.exception("Failed to read metadata from %s: %s", self.metadatas_path, e)
             print("Failed to read metadata from %s: %s", self.metadatas_path, e)
             return None
 
@@ -68,7 +59,6 @@ class GithubBuildVectorDB:
         Returns:
             List[Document]: A list of loaded documents.
         """
-        logger.info("Loading documents from directory: %s", self.directory_path)
         dir_pdf_loader = DirectoryLoader(
             self.directory_path,
             loader_cls=PyMuPDFLoader,
@@ -76,7 +66,6 @@ class GithubBuildVectorDB:
         )
 
         dir_content = dir_pdf_loader.load()
-        logger.info("Loaded %d documents from %s", len(dir_content), self.directory_path)
         return dir_content
 
     
@@ -91,7 +80,6 @@ class GithubBuildVectorDB:
         Returns:
             List[Document]: The list of document chunks.
         """
-        logger.info("Splitting %d documents into chunks (chunk_size=%d, chunk_overlap=%d)", len(documents), chunk_size, chunk_overlap)
         splitter = RecursiveCharacterTextSplitter(
             chunk_size=chunk_size,
             chunk_overlap=chunk_overlap,
@@ -103,7 +91,6 @@ class GithubBuildVectorDB:
         document_names = []
         for chunk in split_doc:
             document_names.append(chunk.metadata["source"])
-        logger.info("Split into %d chunks", len(split_doc))
 
         return split_doc, document_names
 
@@ -122,11 +109,7 @@ class GithubBuildVectorDB:
             None
         """
         if not chunks:
-            logger.warning("No chunks provided to generate_embeddings; skipping.")
             return
-
-        logger.info("Generating embeddings for %d chunks", len(chunks))
-        logger.info("Example of a chunk %s", chunks[0].metadata['file_path'].split("/")[-1])
         
         try:
             texts = [str(chunk.page_content) for chunk in chunks]
@@ -145,9 +128,7 @@ class GithubBuildVectorDB:
                 documents=texts,
                 metadatas = metadatas
             )
-            logger.info("Added %d embeddings to collection '%s'", len(ids), getattr(self.collection, 'name', 'unknown'))
         except Exception as e:
-            logger.exception("Failed to generate or add embeddings: %s", e)
             raise
 
 
@@ -161,5 +142,4 @@ class GithubBuildVectorDB:
             List[str]: List of document names corresponding to the chunks added to the collection.
         """
         self.generate_embeddings(chunks=chunks, metadatas=metadatas)
-        logger.info("Finished build for collection '%s'", getattr(self.collection, 'name', 'unknown'))
                 
