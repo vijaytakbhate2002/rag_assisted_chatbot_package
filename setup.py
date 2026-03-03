@@ -6,8 +6,8 @@ from setuptools import setup, find_packages
 # Package Metadata
 # ------------------------
 
-PACKAGE_NAME = "rag-assisted-chatbot"      # pip name
-MODULE_NAME = "rag_assisted_chatbot"       # import name
+PACKAGE_NAME = "rag-assisted-chatbots"      # pip name
+MODULE_NAME = "rag_assisted_chatbots"       # import name
 
 DESCRIPTION = (
     "RAG Assisted Chatbot to query GitHub profile and Resume for "
