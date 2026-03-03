@@ -14,4 +14,5 @@ data/
 test*
 logs*
 github_data/
-vector_db/
+*vector_db*/
+medium_data/

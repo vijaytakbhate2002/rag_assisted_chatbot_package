@@ -1,0 +1,1 @@
+from rag_assisted_bots.ask_medium.src.data_collection_pipeline import MediumDataCollector

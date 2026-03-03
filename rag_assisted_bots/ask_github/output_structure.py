@@ -12,3 +12,4 @@ class InterViewResponse(BaseModel):
         output should be answer of HR question based on resume provided."""
     response_message: Optional[str] = Field(description="response message to HR question based on context provided.")
     reference_links: Optional[List[str]] = Field(description="List of reference links of github projects, blogs, articles etc.")
+

@@ -1,4 +1,4 @@
-from rag_assisted_bots.ask_github.conversation_management import conversationUpdate
+from rag_assisted_bots.ask_github.conversation_management import ConversationManager
 from rag_assisted_bots.ask_github.output_structure import InterViewResponse, RagActivation
 from rag_assisted_bots.ask_github.prompts import rag_activation_prompt
 from rag_assisted_bots.ask_github.ask_vectordb import GithubAskToVectorDB
@@ -36,16 +36,18 @@ class RAGModel:
 
 
 
-class GithubAssistant:
+class Assistant:
     """ This is an LLM gpt-5-min whcih uses RAG plus resume context to answer interview questions asked by HR."""
 
     updated_conversation = []
 
 
-    def __init__(self, gpt_model_name:str, temperature:float, collection_name:str, vectordb_path:str, rag_activated:bool):
+    def __init__(self, gpt_model_name:str, temperature:float, collection_name:str, vectordb_path:str, rag_activated:bool, assistant_type:str="github"):
         self.gpt_model_name = gpt_model_name
         self.temperature = temperature
         self.rag_activated = rag_activated
+        self.assistant_type = assistant_type
+        self.manager = ConversationManager(assistant_type=self.assistant_type)
         if self.rag_activated:
             self.rag_model = RAGModel(
                                     vectordb_path=vectordb_path,
@@ -87,16 +89,22 @@ class GithubAssistant:
                 unique_repo_names.append(name)
                 unique_metadatas.append(metadata)
         return unique_metadatas
-
+     
 
     def chat_with_model(self, question:str) -> dict:
         """ Takes input question and return answer of that question with updating conversation list.
             conversation list used to make model remember last 4 conversation messages
             Args:
-                question: input question
+                question: input question                
+                assistant_type: type of assistant (github or medium)
 
             Returns:
-                    (answer, question_category): returns the response of llm """
+                    dict: {
+                    "response": model generated answer,
+                    "rag_relevance": relevance of RAG context to question,
+                    "metadatas": metadata of retrieved RAG context,
+                    "rag_context": retrieved RAG context
+                }"""
 
         conversation_model, rag_activation_chain = self.build_chains(rag_activation_prompt)
 
@@ -107,10 +115,10 @@ class GithubAssistant:
         
         rag_activation = rag_activation_chain.invoke({"question": question, "rag_context": rag_context})
 
-        self.updated_conversation = conversationUpdate(
-                                                rag_context=rag_context,
-                                                top_k_matches=TOP_K_MATCHES,
-                                                rag_activation = rag_activation.rag_activation
+        self.updated_conversation = self.manager.manage(
+                                                        rag_context=rag_context,
+                                                        top_k_matches=TOP_K_MATCHES,                                                        
+                                                        rag_activation=rag_activation.rag_activation
                                                     )
 
         self.updated_conversation.append(HumanMessage(question))

@@ -132,10 +132,8 @@ class GithubBuildVectorDB:
             texts = [str(chunk.page_content) for chunk in chunks]
             ids = [str(uuid.uuid4()) for _ in chunks]
 
-            # Encode in batch for efficiency
             embeddings = self.embedding_model.encode(texts)
 
-            # Ensure embeddings are regular lists for Chroma (e.g., convert numpy arrays)
             try:
                 embeddings = embeddings.tolist()
             except Exception:
@@ -162,7 +160,6 @@ class GithubBuildVectorDB:
         Returns:
             List[str]: List of document names corresponding to the chunks added to the collection.
         """
-        # Generate and add embeddings to the collection
         self.generate_embeddings(chunks=chunks, metadatas=metadatas)
         logger.info("Finished build for collection '%s'", getattr(self.collection, 'name', 'unknown'))
                 
